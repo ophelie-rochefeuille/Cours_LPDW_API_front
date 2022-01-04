@@ -1,7 +1,6 @@
 
 var MAP_API = {
 
-//	http://api.aviationstack.com/v1/airports?access_key=5329f2889ae318c6a7114e7bc2f87cec
 	AVIATION_API_URL: "http://localhost:8888/API/api/airports.php",
 
 	map : null,
@@ -17,18 +16,17 @@ var MAP_API = {
 
 	buildMap : function () {
 		//create map 
-
 		const paris = { 
 			lat: 48.8534, 
 			lng: 2.3488 
 			};
 
-			this.map = new google.maps.Map(document.getElementById("map"), {
-				zoom: 5,
-				center: paris,
-			  });
+		this.map = new google.maps.Map(document.getElementById("map"), {
+			zoom: 5,
+			center: paris,
+		});
 		
-			  this.map.setOptions({disableDoubleClickZoom: true})
+		this.map.setOptions({disableDoubleClickZoom: true})
 	
 	},
 
@@ -77,6 +75,7 @@ var MAP_API = {
 				longitude: inputLongitude.value
 			}
 			this.addAirport();
+			window.location.reload;
 			form.style.display = "none"
 		})
 	},
@@ -108,23 +107,21 @@ var MAP_API = {
 	},
 
 
-	deleteAirport: function(){
+	deleteAirport: function(airportId){
 		//delete airport 
 		var deleteMethod = {
             method: 'DELETE',
             mode: 'cors',
             headers: new Headers(),
-            body: JSON.stringify(this.airports)
+            body: JSON.stringify({id:airportId})
         };
 		fetch(this.AVIATION_API_URL, deleteMethod)
-		.then((response) => {
-			return response.json()
-		}).then(response => {
-			console.log(response)
+		.then(() => {
+			window.location.reload();
 		})
 	},
 
-	
+
 	updateAirport: function(){
 		// update airport
 		var updateMethod = {
@@ -149,11 +146,32 @@ var MAP_API = {
 			})
 	},
 
+	markersInfos: function() {
+		//marker informations airport
+		const infowindow = new google.maps.InfoWindow({
+			content: contentString,
+		});
 
+		const contentString = element.name + 
+		'<br />' + 'Latitude: ' + 
+		element.latitude + 
+		'<br />' + 'Longitude: ' +
+		element.longitude;
+		
+		markerGoogle.addListener("click", () => {
+			infowindow.open({
+			  map,
+			  shouldFocus: false,
+			})
+			
+	  })
+	},
+	
 	appendElementToList : function ( airports ) {
 		// Add element airport in map 
 		this.airports.map(element => {
 
+			
 			let ul = document.querySelector('ul');
 			let li = document.createElement('li');
 			li.style.display =  "flex";
@@ -161,6 +179,7 @@ var MAP_API = {
 			ul.appendChild(li);
 
 			let deleteButton = document.createElement('button');
+			deleteButton.setAttribute("data-id", element.id)
 			deleteButton.innerHTML = " Delete";
 			deleteButton.style.background = "none"
 			deleteButton.style.border = "1px solid black"
@@ -175,7 +194,7 @@ var MAP_API = {
 			updateButton.style.margin = "5px"
 			
 			deleteButton.addEventListener("click", event => {
-				this.deleteAirport();
+				this.deleteAirport(event.currentTarget.dataset.id)
 				console.log("Delete airport")
 			})
 			
@@ -203,29 +222,7 @@ var MAP_API = {
 					scaledSize: new google.maps.Size(20,20)
 				}	
 			  });
-
-			const contentString = element.name + 
-								'<br />' + 'Latitude: ' + 
-								element.latitude + 
-								'<br />' + 'Longitude: ' +
-								element.longitude;
-
-			const infowindow = new google.maps.InfoWindow({
-				content: contentString,
-			});
-
-			  markerGoogle.addListener("click", () => {
-					infowindow.open({
-					  map,
-					  shouldFocus: false,
-					})
-					
-			  })
 		})
 	}
 }
 
-//var paris = { 
-//	lat: 48.8534, 
-//	lng: 2.3488 
-// };
