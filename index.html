@@ -25,6 +25,22 @@
       <h4>Liste des aéroports</h4>
       <ul id="airports-list"></ul>
     </div>
+
+    <form class="form" style="display: none" id="form">
+      <input name="name" type="text" placeholder="name">
+      <input name="latitude" type="text" placeholder="latitude">
+      <input name="longitude" type="text" placeholder="longitude">
+      <button type="submit">Ajouter</button>
+    </form>
     <script src="./js/script.js"></script>
+    <style>
+
+      .form{
+        position: absolute;
+        top: 0;
+        left: 0;
+        
+      }
+    </style>
   </body>
 </html>
